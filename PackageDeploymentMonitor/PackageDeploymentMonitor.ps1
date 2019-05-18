@@ -1,28 +1,9 @@
-<#
-.SYNOPSIS
-    Use with an ConfigMgr status filter rule to automatically receive alerts for deployments to collections larger than a specied threshold.
-.DESCRIPTION
-    Full installation procedures can be found on my blog: http://blog.configmatt.com/2017/05/monitoring-potentially-dangerous.html
-.EXAMPLE
-    PS C:\> <example usage>
-    Explanation of what the example does 
-.INPUTS
-    Inputs (if any)
-.OUTPUTS
-    Output (if any)
-.NOTES
-    Author: Matt Atkinson @ConfigMatt www.configmatt.com
-.PARAMETER AssignmentID
-AssigmentID of the deployment. Should be passed direcly from the status filter rule.
-.PARAMETER Creator
-AD account of the person that created the deployment. Will be passed from the status filter rule.
-#>
 param (
 $assignmentID,
-$Creator
+$creator
 )
-#Import the ConfigMgr Powershell Module
 Import-Module (Join-Path $(Split-Path $env:SMS_ADMIN_UI_PATH) ConfigurationManager.psd1)
+import-module ActiveDirectory
 
 ## Declare variables
 #Comma separated list of email addresses to send warning to, update this for your organization.
@@ -35,7 +16,7 @@ $EmailServer = "smtp.emailserver.com"
 $EmailPort = "25"
 
 #Email address to use as the sender
-$EmailSender = "DeploymentWarning@domain.com"
+$emailsender = "DeploymentWarning@domain.com"
 
 #SCCM Site Code for your SCCM site
 $CMSiteCode = "ABC:"
@@ -57,7 +38,7 @@ Set-location $CMSiteCode
 #Modify the maximum number of ConfigMgr query results to return, in case you have a very large number of deployments.
 Set-CMQueryResultMaximum 5000
 
-$AssignmentUniqueID = Get-CMDeployment | Where-Object {$_.AssignmentID -eq $assignmentID} | Select-Object -ExpandProperty DeploymentID
+$AssignmentUniqueID = $assignmentID
 $Deployment = Get-CMDeployment -DeploymentId $AssignmentUniqueID
 
 #Get the application name
@@ -67,21 +48,21 @@ $Application = $Deployment.SoftwareName
 $DesiredConfigType = $Deployment.DesiredConfigType
 
 #Get the deployment start time
-$AvailableTime = $Deployment.DeploymentTime
-
-#Convert UTC to local time
-$AvailableTime = $AvailableTime.ToLocalTime()
-$AvailableTime = $AvailableTime.ToString()
+$AvailableTime = Get-CMPackageDeployment -DeploymentId $AssignmentUniqueID
+if($AvailableTime.PresentTimeIsGMT -eq $false)
+{
+$AvailableTime = $AvailableTime.PresentTime
+}
+else {$AvailableTime = $AvailableTime.tolocaltime()}
 
 #Get the deadline time
-$DeadlineTime = $Deployment.EnforcementDeadline
+$Schedule = (Get-CMPackageDeployment -DeploymentId $AssignmentUniqueID).AssignedSchedule
+if ($Schedule.isgmt -eq $false)
+{$DeadlineTime = $Schedule.starttime}
+else {$DeadlineTime = $schedule.starttime.tolocaltime()}
 
-#Convert UTC to local time
-$DeadlineTime = $DeadlineTime.ToLocalTime()
-$DeadlineTime = $DeadlineTime.ToString()
-
-#Get The comment
-$Comment = (Get-WmiObject -ComputerName $SiteServer -Namespace Root\SMS\Site_$CMSiteCode -class SMS_ApplicationAssignment -Filter "AssignmentID = '$($deployment.assignmentid)'").Assignmentdescription
+#Get the comments for the deployment
+$Comment = (Get-WmiObject -ComputerName $SiteServer -Namespace Root\SMS\Site_$sitecode -class SMS_Advertisement  -Filter "AdvertisementID = '$($AssignmentUniqueID)'").Comment
 
 #Switch for the desired config (Install or Uninstall)
 Switch ($DesiredConfigType)
@@ -119,13 +100,15 @@ If ($MemberCount -ge $WarningThreshold)
 
         if ($DeploymentIntent -eq "Required")
         {
-        Send-MailMessage -SmtpServer $EmailServer -Port $EmailPort -Priority High -From $EmailSender -To $EmailAddresses -Subject "Deployment Warning - Required to $MemberCount $clienttype" -Body  "$Application is being $DesiredConfigType on $MemberCount assets in the collection $Targetcollection by $creatorname.`n`nThe deployment type is $DeploymentIntent and will become available at $AvailableTime Pacific Time and has an install deadline of $DeadlineTime Pacific Time.`n The Assignment ID is $AssignmentUniqueID. The comments on the deployment are: `n $Comment `n `n "
+        Send-MailMessage -SmtpServer $EmailServer -Port $EmailPort -Priority High -From $emailsender -To $EmailAddresses -Subject "Deployment Warning - Required to $MemberCount $clienttype" -Body  "$Application is being $DesiredConfigType on $MemberCount assets in the collection $Targetcollection by user $creatorname.`n`nThe deployment type is $DeploymentIntent and will become available at $AvailableTime Pacific Time and has an install deadline of $DeadlineTime Pacific Time.`n The Assignment ID is $AssignmentUniqueID. The comments on the deployment are: `n $Comment `n `n Documentation for this script is available at: www.configmatt.com"
         }
 
         elseif ($DeploymentIntent -eq "Available")
         {
-        Send-MailMessage -SmtpServer $EmailServer -Port $EmailPort -Priority Low -From $EmailSender -To $EmailAddresses -Subject "Deployment Warning - Available to $MemberCount $clienttype" -Body  "$Application is being $DesiredConfigType on $MemberCount assets in the collection $Targetcollection by $creatorname.`n`nThe deployment type is $DeploymentIntent and will become available at $AvailableTime.`n The Assignment ID is $AssignmentUniqueID. The comments on the deployment are: `n $Comment"
+        Send-MailMessage -SmtpServer $EmailServer -Port $EmailPort -Priority Low -From $emailsender -To $EmailAddresses -Subject "Deployment Warning - Available to $MemberCount $clienttype" -Body  "$Application is being $DesiredConfigType on $MemberCount assets in the collection $Targetcollection by user $creatorname.`n`nThe deployment type is $DeploymentIntent and will become available at $AvailableTime.`n The Assignment ID is $AssignmentUniqueID. The comments on the deployment are: `n $Comment `n `n Documentation for this script is available at:`n www.configmatt.com"
         }
 
 
     } 
+
+
