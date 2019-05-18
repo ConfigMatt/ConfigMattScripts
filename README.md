@@ -1,2 +1,0 @@
-# ConfigMattScripts
-Public Scripts
