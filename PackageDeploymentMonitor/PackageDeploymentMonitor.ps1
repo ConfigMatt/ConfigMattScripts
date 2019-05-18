@@ -100,12 +100,12 @@ If ($MemberCount -ge $WarningThreshold)
 
         if ($DeploymentIntent -eq "Required")
         {
-        Send-MailMessage -SmtpServer $EmailServer -Port $EmailPort -Priority High -From $emailsender -To $EmailAddresses -Subject "Deployment Warning - Required to $MemberCount $clienttype" -Body  "$Application is being $DesiredConfigType on $MemberCount assets in the collection $Targetcollection by user $creatorname.`n`nThe deployment type is $DeploymentIntent and will become available at $AvailableTime Pacific Time and has an install deadline of $DeadlineTime Pacific Time.`n The Assignment ID is $AssignmentUniqueID. The comments on the deployment are: `n $Comment `n `n Documentation for this script is available at: www.configmatt.com"
+        Send-MailMessage -SmtpServer $EmailServer -Port $EmailPort -Priority High -From $EmailSender -To $EmailAddresses -Subject "Deployment Warning - Required to $MemberCount $clienttype" -Body  "$Application is being $DesiredConfigType on $MemberCount assets in the collection $Targetcollection by user $creatorname.`n`nThe deployment type is $DeploymentIntent and will become available at $AvailableTime Pacific Time and has an install deadline of $DeadlineTime Pacific Time.`n The Assignment ID is $AssignmentUniqueID. The comments on the deployment are: `n $Comment `n `n Documentation for this script is available at: www.configmatt.com"
         }
 
         elseif ($DeploymentIntent -eq "Available")
         {
-        Send-MailMessage -SmtpServer $EmailServer -Port $EmailPort -Priority Low -From $emailsender -To $EmailAddresses -Subject "Deployment Warning - Available to $MemberCount $clienttype" -Body  "$Application is being $DesiredConfigType on $MemberCount assets in the collection $Targetcollection by user $creatorname.`n`nThe deployment type is $DeploymentIntent and will become available at $AvailableTime.`n The Assignment ID is $AssignmentUniqueID. The comments on the deployment are: `n $Comment `n `n Documentation for this script is available at:`n www.configmatt.com"
+        Send-MailMessage -SmtpServer $EmailServer -Port $EmailPort -Priority Low -From $EmailSender -To $EmailAddresses -Subject "Deployment Warning - Available to $MemberCount $clienttype" -Body  "$Application is being $DesiredConfigType on $MemberCount assets in the collection $Targetcollection by user $creatorname.`n`nThe deployment type is $DeploymentIntent and will become available at $AvailableTime.`n The Assignment ID is $AssignmentUniqueID. The comments on the deployment are: `n $Comment `n `n Documentation for this script is available at:`n www.configmatt.com"
         }
 
 
