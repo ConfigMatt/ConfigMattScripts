@@ -5,7 +5,7 @@
     Full installation procedures can be found on my blog: http://blog.configmatt.com/2017/05/monitoring-potentially-dangerous.html
 .EXAMPLE
     PS C:\> <example usage>
-    Explanation of what the example does
+    Explanation of what the example does 
 .INPUTS
     Inputs (if any)
 .OUTPUTS
