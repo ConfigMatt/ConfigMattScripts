@@ -1,3 +1,25 @@
+<#
+.SYNOPSIS
+    Use with an ConfigMgr status filter rule to automatically receive alerts for deployments to collections larger than a specied threshold.
+.DESCRIPTION
+    Full installation procedures can be found on my blog: http://blog.configmatt.com/2017/05/monitoring-potentially-dangerous.html
+.EXAMPLE
+    PS C:\> <example usage>
+    Explanation of what the example does 
+.INPUTS
+    Inputs (if any)
+.OUTPUTS
+    Output (if any)
+.NOTES
+    Author: Matt Atkinson @ConfigMatt www.configmatt.com
+.PARAMETER AssignmentID
+AssigmentID of the deployment. Should be passed direcly from the status filter rule.
+.PARAMETER Creator
+AD account of the person that created the deployment. Will be passed from the status filter rule.
+
+##TODO: Add teams notification options to public script.
+#>
+
 param (
 $assignmentID,
 $creator

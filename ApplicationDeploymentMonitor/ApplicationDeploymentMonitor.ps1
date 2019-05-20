@@ -16,6 +16,8 @@
 AssigmentID of the deployment. Should be passed direcly from the status filter rule.
 .PARAMETER Creator
 AD account of the person that created the deployment. Will be passed from the status filter rule.
+
+##TODO: Add teams notification options to public script.
 #>
 param (
 $assignmentID,
