@@ -39,8 +39,8 @@ $EmailPort = "25"
 #Email address to use as the sender
 $EmailSender = "DeploymentWarning@domain.com"
 
-#SCCM Site Code for your SCCM site
-$CMSiteCode = "ABC:"
+#SCCM Site Code for your SCCM site. Do not add a colon.
+$CMSiteCode = "ABC"
 
 #SCCM Site Server
 $SiteServer = "ConfigMgr.domain.com"
@@ -54,7 +54,7 @@ $creatorName = (get-aduser -Identity $creatorEmail[1] -Server $creatorEmail[0] -
 $creatorEmail = (get-aduser -Identity $creatorEmail[1] -Server $creatorEmail[0] -Properties mail | Select-Object -ExpandProperty mail)
 
 #Switch to the CMSite PSDrive
-Set-location $CMSiteCode
+Set-location ("$CMSiteCode"+":")
 
 #Modify the maximum number of ConfigMgr query results to return, in case you have a very large number of deployments.
 Set-CMQueryResultMaximum 5000
