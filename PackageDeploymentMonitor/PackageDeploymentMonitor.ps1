@@ -11,7 +11,7 @@
 .OUTPUTS
     Output (if any)
 .NOTES
-    Author: Matt Atkinson @ConfigMatt www.configmatt.com
+    Author: Matt Atkinson @ConfigMatt www.configmatt.com Test
 .PARAMETER AssignmentID
 AssigmentID of the deployment. Should be passed direcly from the status filter rule.
 .PARAMETER Creator
