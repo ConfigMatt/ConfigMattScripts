@@ -40,8 +40,8 @@ $EmailPort = "25"
 #Email address to use as the sender
 $emailsender = "DeploymentWarning@domain.com"
 
-#SCCM Site Code for your SCCM site
-$CMSiteCode = "ABC:"
+#SCCM Site Code for your SCCM site. Do not include a colon.
+$CMSiteCode = "ABC"
 
 #SCCM Site Server
 $SiteServer = "ConfigMgr.domain.com"
@@ -55,7 +55,7 @@ $creatorName = (get-aduser -Identity $creatorEmail[1] -Server $creatorEmail[0] -
 $creatorEmail = (get-aduser -Identity $creatorEmail[1] -Server $creatorEmail[0] -Properties mail | Select-Object -ExpandProperty mail)
 
 #Switch to the CMSite PSDrive
-Set-location $CMSiteCode
+Set-location ("$CMSiteCode"+":")
 
 #Modify the maximum number of ConfigMgr query results to return, in case you have a very large number of deployments.
 Set-CMQueryResultMaximum 5000
@@ -84,7 +84,7 @@ if ($Schedule.isgmt -eq $false)
 else {$DeadlineTime = $schedule.starttime.tolocaltime()}
 
 #Get the comments for the deployment
-$Comment = (Get-WmiObject -ComputerName $SiteServer -Namespace Root\SMS\Site_$sitecode -class SMS_Advertisement  -Filter "AdvertisementID = '$($AssignmentUniqueID)'").Comment
+$Comment = (Get-WmiObject -ComputerName $SiteServer -Namespace Root\SMS\Site_$CMsitecode -class SMS_Advertisement  -Filter "AdvertisementID = '$($AssignmentUniqueID)'").Comment
 
 #Switch for the desired config (Install or Uninstall)
 Switch ($DesiredConfigType)
