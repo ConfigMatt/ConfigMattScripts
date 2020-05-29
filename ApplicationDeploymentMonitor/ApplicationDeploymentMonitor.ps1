@@ -1,6 +1,6 @@
 <#
 .SYNOPSIS
-    Use with a ConfigMgr status filter rule to automatically receive alerts for deployments to collections larger than a specied threshold.
+    Use with a ConfigMgr status filter rule to automatically receive alerts for deployments to collections larger than a specified threshold.
 .DESCRIPTION
     Full installation procedures can be found on my blog: http://blog.configmatt.com/2017/05/monitoring-potentially-dangerous.html
 .EXAMPLE
